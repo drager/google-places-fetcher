@@ -1,0 +1,13 @@
+name: google_places_fetcher
+version: 0.0.1
+description: Fetches places from Google's API and inserts them into a database
+author: Jesper Håkansson <jesper@jesperh.se>
+
+environment:
+  sdk: '>=1.0.0 <2.0.0'
+
+dependencies:
+  http: any
+
+dev_dependencies:
+  test: '>=0.12.0 <0.13.0'
