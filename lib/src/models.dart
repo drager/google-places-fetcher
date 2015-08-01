@@ -1,17 +1,18 @@
 part of google_places_fetcher;
 
-class Position {
-  num longitude;
-  num latitude;
-  DateTime created_at;
-  DateTime updated_at;
-}
-
-class Coffee {
+class CoffeePlace {
   String name;
   String address;
   String description;
   String image;
+  double latitude;
+  double longitude;
   DateTime created_at;
   DateTime updated_at;
+}
+
+class City {
+  String name;
+  double latitude;
+  double longitude;
 }

@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   http: any
+  postgresql: '^0.3.1+1'
 
 dev_dependencies:
   test: '>=0.12.0 <0.13.0'
