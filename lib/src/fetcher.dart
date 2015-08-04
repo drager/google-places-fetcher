@@ -35,9 +35,9 @@ Future getPlacesIn(num latitude, num longitude, int radius) async {
 
   await Future.forEach(places, (place) async {
     await connection.execute(
-        "insert into positioningservice_coffee ('@name', '@created_at', '@updated_at', "
-        "'@address', '@description', '@image', '@latitude', '@longitude') values ('@name', '@created_at', '@updated_at', "
-        "'@address', '@description', '@image', '@latitude', '@longitude');", {
+        "insert into positioningservice_coffee (name, created_at, updated_at, "
+        "address, description, image, latitude, longitude) values (@name, @created_at, @updated_at, "
+        "@address, @description, @image, @latitude, @longitude);", {
       'name': place.name,
       'created_at': place.created_at,
       'updated_at': place.updated_at,
@@ -47,8 +47,8 @@ Future getPlacesIn(num latitude, num longitude, int radius) async {
       'latitude': place.latitude,
       'longitude': place.longitude,
     });
+    connection.close();
   });
-  connection.close();
 }
 
 Future getCoordinatesFromCityNames(List<String> cities) async {
