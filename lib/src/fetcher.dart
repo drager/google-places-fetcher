@@ -81,5 +81,5 @@ Future getPhotoByPhotoId(String photoId, [int maxWidth = 400]) async {
   List<int> bytes = response.bodyBytes;
   String base64 = CryptoUtils.bytesToBase64(bytes);
 
-  return new StringBuffer('data:image/png;base64,' + base64).toString();
+  return new StringBuffer('data:image/png;base64,$base64').toString();
 }
