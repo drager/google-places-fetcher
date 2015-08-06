@@ -43,12 +43,12 @@ Future getPlacesIn(num latitude, num longitude, int radius) async {
       'updated_at': place.updated_at,
       'address': place.address,
       'description': place.description,
-      'image': place.image,
+      'image': place.image != null ? place.image : '',
       'latitude': place.latitude,
       'longitude': place.longitude,
     });
-    connection.close();
   });
+  connection.close();
 }
 
 Future getCoordinatesFromCityNames(List<String> cities) async {
