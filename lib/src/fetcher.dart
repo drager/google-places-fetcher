@@ -75,7 +75,7 @@ Future getCoordinatesFromCityNames(List<String> cities) async {
 
 Future getPhotoByPhotoId(String photoId, [int maxWidth = 400]) async {
   var response = await http.get(
-      '$googleBaseUrl/photo?maxwidth=$maxWidth&photoreference=$photoId&key=$googleApiKey');
+      '$googleBaseUrl/place/photo?maxwidth=$maxWidth&photoreference=$photoId&key=$googleApiKey');
 
   List<int> bytes = response.bodyBytes;
   String base64 = CryptoUtils.bytesToBase64(bytes);
