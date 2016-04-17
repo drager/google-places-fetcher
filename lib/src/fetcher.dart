@@ -6,15 +6,17 @@ final type = 'cafe';
 Future getPlacesIn(num latitude, num longitude, int radius) async {
   var places = [];
   var image;
-
-  var connection = await connect(postgresUri);
+  var formattedPhoneNumber;
+  var internationalPhoneNumber;
+  var website;
+  var priceLevel;
 
   var response = await http.get(
       '$googleBaseUrl/place/nearbysearch/json?location=$latitude,$longitude&radius=$radius&types=$type&key=$googleApiKey');
 
   response = JSON.decode(response.body);
 
-  print(response);
+  print('$googleBaseUrl/place/nearbysearch/json?location=$latitude,$longitude&radius=$radius&types=$type&key=$googleApiKey');
 
   await Future.forEach(response['results'], (place) async {
     if (place.containsKey('photos')) {
@@ -22,33 +24,29 @@ Future getPlacesIn(num latitude, num longitude, int radius) async {
         image = await getPhotoByPhotoId(photo['photo_reference']);
       });
     }
+
+    var details = await getPlaceDetails(place['reference']);
+    formattedPhoneNumber = details['formatted_phone_number'];
+    internationalPhoneNumber = details['international_phone_number'];
+    priceLevel = details['price_level'];
+    website = details['website'];
+
     places.add(new CoffeePlace()
       ..name = place['name']
       ..address = place['vicinity']
       ..description = 'test'
       ..image = image
+      ..formattedPhoneNumber = formattedPhoneNumber
+      ..internationalPhoneNumber = internationalPhoneNumber
+      ..website = website
       ..latitude = place['geometry']['location']['lat']
       ..longitude = place['geometry']['location']['lng']
+      ..priceLevel = priceLevel
       ..created_at = new DateTime.now()
       ..updated_at = new DateTime.now());
   });
 
-  await Future.forEach(places, (place) async {
-    await connection.execute(
-        "insert into positioningservice_coffee (name, created_at, updated_at, "
-        "address, description, image, latitude, longitude) values (@name, @created_at, @updated_at, "
-        "@address, @description, @image, @latitude, @longitude);", {
-      'name': place.name,
-      'created_at': place.created_at,
-      'updated_at': place.updated_at,
-      'address': place.address,
-      'description': place.description,
-      'image': place.image != null ? place.image : '',
-      'latitude': place.latitude,
-      'longitude': place.longitude,
-    });
-  });
-  connection.close();
+  return places;
 }
 
 Future getCoordinatesFromCityNames(List<String> cities) async {
@@ -59,8 +57,6 @@ Future getCoordinatesFromCityNames(List<String> cities) async {
         .get('$googleBaseUrl/geocode/json?address=$city&key=$googleApiKey');
 
     response = JSON.decode(response.body);
-
-    print(response);
 
     var result = response['results'].first;
 
@@ -80,5 +76,14 @@ Future getPhotoByPhotoId(String photoId, [int maxWidth = 400]) async {
   List<int> bytes = response.bodyBytes;
   String base64 = CryptoUtils.bytesToBase64(bytes);
 
-  return new StringBuffer('data:image/png;base64,$base64').toString();
+  return new StringBuffer('data:image/png;base64,' + base64).toString();
+}
+
+Future getPlaceDetails(String referenceId) async {
+  var response = await http.get(
+      '$googleBaseUrl/place/details/json?reference=$referenceId&key=$googleApiKey');
+
+  response = JSON.decode(response.body);
+
+  return response['result'];
 }
